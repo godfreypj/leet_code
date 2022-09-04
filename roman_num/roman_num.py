@@ -1,11 +1,40 @@
-class Solution(object):
-    
+"""
+This module takes a list of roman numerals and returns
+the equivalent decimal
+"""
+from typing import List
 
-    def romanToInt(self, s):
+class Solution():
+    """Solution class
+
+    Attributes:
+        roman_numerals  (List[str]): List of roman numerals to convert
+        solution        (List[str]): List of decimals as per input
+    """
+    def __init__(self, roman_numerals: List[str]):
+        self.roman_numerals = input
+        self.solution       = []
+
+        # Iterate over the input, appending the result to the solution attribute
+        for numeral in roman_numerals:
+            self.solution.append(self.roman_to_int(numeral))
+
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        if isinstance(other, Solution):
+            return self.roman_numerals is other.roman_numerals and self.solution is other.solution
+        return False
+
+    def roman_to_int(self, numeral: str) -> int:
+        """ Given a roman numeral string, this function will
+        return the equivalent decimal integer
+
+        Args:
+            numeral (str): the roman numeral to be converted
+        Returns:
+            result (int): the equivalent decimal
         """
-        :type s: str
-        :rtype: int
-        """
+
         # Create a dictionary
         numeral_dict = {
             "I" : 1,
@@ -16,20 +45,28 @@ class Solution(object):
             "D" : 500,
             "M" : 1000,
         }
-        
+
+        # Zero out the result
         result = 0
 
-        for index in range(len(s)-1, -1, -1):
-            
-            num = numeral_dict[s[index]]
+        # Iterate backwards over our string numeral
+        for index in range(len(numeral)-1, -1, -1):
 
+            # Set num to index
+            num = numeral_dict[numeral[index]]
+
+            # Determine if the numeral is before or after
             if 3*num < result:
+                # Subtract the numeral from the result
                 result = result-num
             else:
+                # Add the numeral to the result
                 result = result+num
-            
-        return result
-            
-        # Apply the rules of Roman Numerals
-        
+
         # Return
+        return result
+
+if __name__ == "__main__":
+    input_list = ["I", "III", "V", "VII", "X", "IL", "L"]
+    test = Solution(input_list)
+    print(str(test.solution))

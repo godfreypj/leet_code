@@ -8,13 +8,14 @@ class Solution():
     """Solution class
 
     Attributes:
-        roman_numerals (List[str]): List of roman numerals to convert
-        solution (List[str]): List of decimals as per input
+        roman_numerals  (List[str]): List of roman numerals to convert
+        solution        (List[str]): List of decimals as per input
     """
     def __init__(self, roman_numerals: List[str]):
         self.roman_numerals = input
-        self.solution = []
+        self.solution       = []
 
+        # Iterate over the input, appending the result to the solution attribute
         for numeral in roman_numerals:
             self.solution.append(self.roman_to_int(numeral))
 
@@ -26,7 +27,7 @@ class Solution():
 
     def roman_to_int(self, numeral: str) -> int:
         """ Given a roman numeral string, this function will
-        return the equivalent decimal string
+        return the equivalent decimal integer
 
         Args:
             numeral (str): the roman numeral to be converted
@@ -66,6 +67,6 @@ class Solution():
         return result
 
 if __name__ == "__main__":
-    input_list = ["I", "III", "V", "VII"]
+    input_list = ["I", "III", "V", "VII", "X", "IL", "L"]
     test = Solution(input_list)
     print(str(test.solution))

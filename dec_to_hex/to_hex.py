@@ -15,30 +15,32 @@ class Solution():
     def __init__(self, decimal_input: List[str]):
         self.decimal_input = decimal_input
         self.solution = None
-        self.first = True
+        self.single = False
         self.hex_dict = {
             10 : "a",
             11 : "b",
             12 : "c",
             13 : "d",
             14 : "e",
-            15 : "f",
+            15 : "f"
         }
         self.hex_result = []
         self.bin_result = []
 
         # Iterate over the input, appending the result to the solution attribute
         for dec in decimal_input:
+            # If the input is only 1 digit
+            if dec < 10 == 1:
+                self.single = True
             if dec > 0:
                 self.to_hex(dec)
             elif dec < 0:
                 self.twos_comp(dec)
             else:
-                self.bin_result.append(dec)
-                self.__format_solution__(self.bin_result)
+                self.process_zero(dec)
 
     def __eq__(self, other):
-        """Overrides the default implementation""" 
+        """Overrides the default implementation"""
         if isinstance(other, Solution):
             return self.decimal_input is other.decimal_input and self.solution is other.solution
         return False
@@ -89,7 +91,7 @@ class Solution():
         maxlen = len(input_string)
 
         # Instantiate
-        result  = ''
+        add_result  = ''
         carry   = 0
 
         # Iterate over our 10 digits
@@ -112,36 +114,36 @@ class Solution():
                 # Carry the 1 over
                 if carry == 0:
                     carry = 1
-                    result = "%s%s" % (result, '0')
+                    add_result = "%s%s" % (add_result, '0')
                 else:
-                    result = "%s%s" % (result, '1')
+                    add_result = "%s%s" % (add_result, '1')
 
             # If it's a 1
             elif temp_string == 1:
                 if carry == 1:
-                    result = "%s%s" % (result, '0')
+                    add_result = "%s%s" % (add_result, '0')
                 else:
-                    result = "%s%s" % (result, '1')
+                    add_result = "%s%s" % (add_result, '1')
 
             # If it's a 0
             else:
                 if carry == 1:
-                    result = "%s%s" % (result, '1')
+                    add_result = "%s%s" % (add_result, '1')
                     carry = 0
                 else:
-                    result = "%s%s" % (result, '0')
+                    add_result = "%s%s" % (add_result, '0')
 
             # Decrement
             i = i - 1
 
         # If we have carried our 1 over, calculate
         if carry>0:
-            result = "%s%s" % (result, '1')
+            add_result = "%s%s" % (add_result, '1')
 
         # Otherwise, add it as is
-        return result[::-1]
+        return add_result[::-1]
 
-    def __format_solution__(self, result):
+    def __format_solution__(self, final_result):
         """ given a list, returns the hex formatted string
         Args:
             result (List): given list of toHex result
@@ -152,7 +154,7 @@ class Solution():
         formatted_result = ""
 
         # Iterate over the given List
-        for item in result:
+        for item in final_result:
             # If our number is less than 10, concat it's string equiv
             if item < 10:
                 formatted_result += str(item)
@@ -169,16 +171,11 @@ class Solution():
         :rtype: str
         """
 
-        if num == 0:
-            return str(num)
+        if num == 1 and self.single or num == 2 and self.single:
+            self.single = False
+            self.hex_result.append(str(num))
 
-        if num == 1 and self.first or num == 2 and self.first:
-            self.first = False
-            return str(num)
-
-        if num >= 1:
-
-            self.first = False
+        if num > 2:
 
             # Get two results, one remainder & divisor of 16
             mod_res = self.__mod_sixteen__(num)
@@ -192,7 +189,7 @@ class Solution():
                 self.to_hex(div_res)
 
             # Once the quotient is 0, lets format our result
-            return self.__format_solution__(self.hex_result)
+            self.solution = self.__format_solution__(self.hex_result)
 
     def twos_comp(self, dec):
         """
@@ -200,10 +197,10 @@ class Solution():
         :rtype: str
         """
          # Check -1 case first and return right away
-        if dec == -1:
+        if dec == -1 and self.single:
+            self.single = False
             for item in "ffffffff":
                 self.bin_result.append(item)
-            self.__format_solution__(self.bin_result)
 
         else:
 
@@ -219,35 +216,41 @@ class Solution():
 
                 self.twos_comp(div_res)
 
-        # Pad to 8 hex digits
-        while len(self.bin_result) < 32:
-            self.bin_result.insert(0, 0)
+            # Pad to 8 hex digits
+            while len(self.bin_result) < 32:
+                self.bin_result.insert(0, 0)
 
-        # Flip it
-        for index in enumerate(self.bin_result):
-            if self.bin_result[index] == 0:
-                self.bin_result[index] = 1
-            else:
-                self.bin_result[index] = 0
+            # Flip it
+            for count, value in enumerate(self.bin_result):
+                if self.bin_result[count] == 0:
+                    self.bin_result[count] = 1
+                else:
+                    self.bin_result[count] = 0
 
-        # String to build
-        bin_str = ""
+            # String to build
+            bin_str = ""
 
-        # Convert to string
-        for item in self.bin_result:
-            bin_str += str(item)
+            # Convert to string
+            for item in self.bin_result:
+                bin_str += str(item)
 
-        # Add one to the binary result
-        self.bin_result = self.__add_one__(bin_str)
+            # Add one to the binary result
+            bin_str = self.__add_one__(bin_str)
 
-        # Convert the binary to a base 10 integer
-        new_int = int(self.bin_result, 2)
+            # Convert the binary to a base 10 integer
+            new_int = int(bin_str, 2)
 
-        # Use our handy function to get the Hex
-        self.bin_result = self.to_hex(new_int)
+            # Use our handy function to get the Hex
+            self.to_hex(new_int)
 
-        # Return it
-        return str(self.bin_result)
+    def process_zero(self, dec):
+        """
+        Blah
+        """
+        self.hex_result.append(dec)
+        self.solution = self.__format_solution__(self.hex_result)
 
 if __name__ == "__main__":
-    input_list = ["I", "III", "V", "VII", "X", "IL", "L"]
+    input_list = [-26]
+    result = Solution(decimal_input=input_list)
+    print(result.solution)

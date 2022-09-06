@@ -221,7 +221,7 @@ class Solution():
                 self.bin_result.insert(0, 0)
 
             # Flip it
-            for count, value in enumerate(self.bin_result):
+            for count in enumerate(self.bin_result):
                 if self.bin_result[count] == 0:
                     self.bin_result[count] = 1
                 else:

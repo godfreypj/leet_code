@@ -69,4 +69,3 @@ class Solution():
 if __name__ == "__main__":
     input_list = ["I", "III", "V", "VII", "X", "IL", "L"]
     test = Solution(input_list)
-    print(str(test.solution))
